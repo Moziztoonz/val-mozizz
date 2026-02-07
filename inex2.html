@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Will You Be My Valentine?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            touch-action: manipulation;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        
+        /* Main Container */
+        .container {
+            text-align: center;
+            padding: clamp(1rem, 5vw, 2rem);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: clamp(15px, 4vw, 20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 10;
+            position: relative;
+            width: min(90vw, 600px);
+            margin: 1rem;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        /* Typography */
+        h1 {
+            color: #d81b60;
+            font-size: clamp(1.8rem, 6vw, 2.8rem);
+            margin-bottom: clamp(1rem, 4vw, 1.5rem);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            line-height: 1.3;
+            font-family: 'Arial Rounded MT Bold', 'Helvetica Neue', sans-serif;
+            padding: 0 0.5rem;
+        }
+        
+        /* Heart Icon */
+        .heart-icon {
+            color: #ff4081;
+            font-size: clamp(3rem, 10vw, 4rem);
+            margin-bottom: clamp(1rem, 4vw, 1.5rem);
+            animation: heartbeat 1.5s infinite;
+            display: inline-block;
+        }
+        
+        /* Buttons Container */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: clamp(1rem, 4vw, 2rem);
+            margin-top: clamp(1.5rem, 5vw, 2rem);
+            flex-wrap: wrap;
+            position: relative;
+            min-height: 120px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: clamp(0.8rem, 3vw, 1rem) clamp(1.5rem, 5vw, 2.5rem);
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            touch-action: manipulation;
+            min-width: 120px;
+            min-height: 50px;
+            user-select: none;
+        }
+        
+        #yesBtn {
+            background: linear-gradient(to bottom, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        #noBtn {
+            background: linear-gradient(to bottom, #f44336, #d32f2f);
+            color: white;
+        }
+        
+        /* Button Hover/Active States */
+        @media (hover: hover) and (pointer: fine) {
+            .btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 18px rgba(0, 0, 0, 0.15);
+            }
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Success Message */
+        .message {
+            display: none;
+            margin-top: clamp(1.5rem, 5vw, 2rem);
+            padding: clamp(1rem, 4vw, 1.5rem);
+            background-color: #fce4ec;
+            border-radius: 15px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .message h2 {
+            color: #c2185b;
+            margin-bottom: 1rem;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+        }
+        
+        .message p {
+            color: #880e4f;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            margin-bottom: 1rem;
+        }
+        
+        .message-hearts {
+            font-size: clamp(2rem, 8vw, 3rem);
+            color: #ff4081;
+            margin-top: 1rem;
+            animation: float 3s infinite ease-in-out;
+        }
+        
+        /* Floating Objects - Optimized for Mobile */
+        .floating-object {
+            position: absolute;
+            z-index: 1;
+            pointer-events: none;
+            will-change: transform;
+            backface-visibility: hidden;
+        }
+        
+        .heart {
+            color: #ff4081;
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            animation: floatAround 20s infinite linear;
+            opacity: 0.7;
+        }
+        
+        .knife {
+            color: #555;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            animation: floatAroundReverse 25s infinite linear;
+            opacity: 0.5;
+        }
+        
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            .heart, .knife, .heart-icon, .message-hearts {
+                animation-duration: 0s !important;
+            }
+        }
+        
+        /* Animations */
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            5%, 15% { transform: scale(1.1); }
+            10% { transform: scale(1); }
+        }
+        
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(30vw, 15vh) rotate(90deg) scale(1.1); }
+            50% { transform: translate(15vw, 30vh) rotate(180deg) scale(1); }
+            75% { transform: translate(-20vw, 20vh) rotate(270deg) scale(0.9); }
+            100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+        }
+        
+        @keyframes floatAroundReverse {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            25% { transform: translate(-25vw, 20vh) rotate(-90deg) scale(0.9); }
+            50% { transform: translate(-15vw, 35vh) rotate(-180deg) scale(1); }
+            75% { transform: translate(20vw, 25vh) rotate(-270deg) scale(1.1); }
+            100% { transform: translate(0, 0) rotate(-360deg) scale(1); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 480px) {
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 80%;
+                max-width: 250px;
+            }
+            
+            /* Fewer floating objects on very small screens */
+            .floating-object:nth-child(n+15) {
+                display: none;
+            }
+        }
+        
+        /* Tablet optimizations */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .button-container {
+                gap: 1.5rem;
+            }
+            
+            .btn {
+                min-width: 140px;
+            }
+        }
+        
+        /* Prevent text selection on buttons */
+        .btn, h1 {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Loading state */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: #d81b60;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading indicator for mobile -->
+    <div class="loading" id="loading">
+        <i class="fas fa-heart" style="margin-right: 10px;"></i> Loading...
+    </div>
+    
+    <div class="container">
+        <div class="heart-icon">
+            <i class="fas fa-heart"></i>
+        </div>
+        
+        <h1>Will You Be My Valentine?</h1>
+        
+        <div class="button-container" id="buttonContainer">
+            <button class="btn" id="yesBtn">YES</button>
+            <button class="btn" id="noBtn">NO</button>
+        </div>
+        
+        <div class="message" id="message">
+            <h2>I knew you would say YES! <i class="fas fa-heart"></i></h2>
+            <p>You've made me the happiest person today!</p>
+            <div class="message-hearts">
+                <i class="fas fa-heart"></i>
+                <i class="fas fa-heart"></i>
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Show loading briefly on mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+            
+            // Hide loading after a short delay
+            setTimeout(() => {
+                loading.style.display = 'none';
+            }, 500);
+        });
+        
+        // Generate optimized floating objects based on screen size
+        function createOptimizedFloatingObjects() {
+            const floatingObjectsContainer = document.body;
+            const screenWidth = window.innerWidth;
+            
+            // Adjust number of objects based on screen size
+            let heartsCount, knivesCount;
+            
+            if (screenWidth < 480) {
+                heartsCount = 8;  // Fewer objects on small screens
+                knivesCount = 5;
+            } else if (screenWidth < 768) {
+                heartsCount = 12;
+                knivesCount = 8;
+            } else {
+                heartsCount = 15;
+                knivesCount = 10;
+            }
+            
+            // Clear existing objects
+            document.querySelectorAll('.floating-object').forEach(obj => obj.remove());
+            
+            // Create hearts
+            for (let i = 0; i < heartsCount; i++) {
+                createFloatingObject('heart');
+            }
+            
+            // Create knives
+            for (let i = 0; i < knivesCount; i++) {
+                createFloatingObject('knife');
+            }
+        }
+        
+        function createFloatingObject(type) {
+            const object = document.createElement('div');
+            object.classList.add('floating-object', type);
+            
+            // Set random position within viewport
+            const posX = Math.random() * window.innerWidth;
+            const posY = Math.random() * window.innerHeight;
+            
+            // Set random animation delay
+            const delay = Math.random() * 5;
+            
+            // Set icon based on type
+            if (type === 'heart') {
+                object.innerHTML = '<i class="fas fa-heart"></i>';
+                object.style.left = `${posX}px`;
+                object.style.top = `${posY}px`;
+                object.style.animationDelay = `${delay}s`;
+                object.style.opacity = 0.6 + Math.random() * 0.3;
+                // Smaller hearts on mobile
+                const size = window.innerWidth < 480 ? 
+                    (0.8 + Math.random() * 1.2) : 
+                    (1 + Math.random() * 2);
+                object.style.fontSize = `${size}rem`;
+            } else {
+                object.innerHTML = '<i class="fas fa-skull-crossbones"></i>';
+                object.style.left = `${posX}px`;
+                object.style.top = `${posY}px`;
+                object.style.animationDelay = `${delay}s`;
+                object.style.opacity = 0.4 + Math.random() * 0.3;
+                // Smaller knives on mobile
+                const size = window.innerWidth < 480 ? 
+                    (1 + Math.random() * 1.2) : 
+                    (1.5 + Math.random() * 1.5);
+                object.style.fontSize = `${size}rem`;
+            }
+            
+            document.body.appendChild(object);
+        }
+        
+        // Initialize floating objects
+        createOptimizedFloatingObjects();
+        
+        // Button interactions optimized for touch
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const message = document.getElementById('message');
+        const buttonContainer = document.getElementById('buttonContainer');
+        
+        // When user clicks YES
+        yesBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            message.style.display = 'block';
+            yesBtn.style.display = 'none';
+            noBtn.style.display = 'none';
+            
+            // Add more floating hearts
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => createFloatingObject('heart'), i * 300);
+            }
+            
+            // Vibrate on mobile if supported
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+        });
+        
+        // When user tries to click or touch NO
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            moveNoButton();
+        });
+        
+        noBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            moveNoButton();
+            
+            // Change text sometimes
+            const messages = ["Are you sure?", "Think again!", "Really?", "Please?", "Give it another thought!"];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            noBtn.textContent = randomMsg;
+            
+            // Vibrate on mobile if supported
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        });
+        
+        function moveNoButton() {
+            const containerRect = buttonContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // Calculate safe area for button movement
+            const safeWidth = containerRect.width - btnRect.width - 20;
+            const safeHeight = containerRect.height - btnRect.height - 20;
+            
+            // Ensure we have positive values
+            if (safeWidth <= 0 || safeHeight <= 0) return;
+            
+            const randomX = Math.floor(Math.random() * safeWidth);
+            const randomY = Math.floor(Math.random() * safeHeight);
+            
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        }
+        
+        // Handle window resize efficiently
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                createOptimizedFloatingObjects();
+                
+                // Reset button position if needed
+                if (noBtn.style.position === 'absolute') {
+                    noBtn.style.position = 'static';
+                    noBtn.style.left = 'auto';
+                    noBtn.style.top = 'auto';
+                }
+            }, 250);
+        });
+        
+        // Handle orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                createOptimizedFloatingObjects();
+            }, 300);
+        });
+        
+        // Prevent zoom on double-tap for mobile
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+        
+        // Prevent context menu on long press for buttons
+        yesBtn.addEventListener('contextmenu', e => e.preventDefault());
+        noBtn.addEventListener('contextmenu', e => e.preventDefault());
+    </script>
+</body>
+</html>`
