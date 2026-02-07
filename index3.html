@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Valentine?</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #ff4d6d, #590d22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.container {
+    text-align: center;
+    z-index: 10;
+    width: 90%;
+    max-width: 400px;
+}
+
+h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    margin-bottom: 30px;
+}
+
+.buttons {
+    position: relative;
+    height: 90px;
+}
+
+button {
+    padding: 14px 34px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    position: absolute;
+    transition: transform 0.15s ease;
+}
+
+#yes {
+    background: #ffccd5;
+    color: #590d22;
+    left: 0;
+}
+
+#no {
+    background: #111;
+    color: white;
+    right: 0;
+}
+
+.message {
+    margin-top: 35px;
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    display: none;
+}
+
+/* Hearts */
+.heart {
+    position: absolute;
+    font-size: 26px;
+    animation: floatUp linear infinite;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(100vh);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-10vh);
+        opacity: 0;
+    }
+}
+
+/* Knives */
+.knife {
+    position: absolute;
+    font-size: 30px;
+    animation: knifeMove linear infinite alternate;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+@keyframes knifeMove {
+    from { transform: translateX(0) rotate(0deg); }
+    to { transform: translateX(200px) rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>Will you be my Valentine? 💘</h1>
+
+    <div class="buttons">
+        <button id="yes">Yes ❤️</button>
+        <button id="no">No ❌</button>
+    </div>
+
+    <div class="message" id="message">
+        I knew you’d say yes ❤️💖
+    </div>
+</div>
+
+<script>
+const noBtn = document.getElementById("no");
+const yesBtn = document.getElementById("yes");
+const msg = document.getElementById("message");
+
+function moveNoButton() {
+    const padding = 20;
+    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding);
+    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding);
+
+    noBtn.style.position = "fixed";
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+// Desktop + Mobile
+noBtn.addEventListener("mouseover", moveNoButton);
+noBtn.addEventListener("touchstart", moveNoButton);
+
+yesBtn.addEventListener("click", () => {
+    msg.style.display = "block";
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+});
+
+// Hearts (optimized rate)
+setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "💖";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 7000);
+}, 600);
+
+// Knives (limited count for mobile performance)
+for (let i = 0; i < 4; i++) {
+    const knife = document.createElement("div");
+    knife.className = "knife";
+    knife.textContent = "🔪";
+    knife.style.top = Math.random() * window.innerHeight + "px";
+    knife.style.left = Math.random() * window.innerWidth + "px";
+    knife.style.animationDuration = (Math.random() * 3 + 4) + "s";
+    document.body.appendChild(knife);
+}
+</script>
+
+</body>
+</html>
